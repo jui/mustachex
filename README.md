@@ -3,9 +3,9 @@
 ## Usage
 
 ```elixir
-Mustachex.render("Hello, {{planet}}", [planet: "World!"])
-#=> "Hello, World!"
 Mustachex.render("Hello, {{planet}}", %{planet: "World!"})
+
+Mustachex.render_file("template.mustache", %{planet: "World!"})
 ```
 
 ## Links
