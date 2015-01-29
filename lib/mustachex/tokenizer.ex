@@ -67,14 +67,14 @@ defmodule Mustachex.Tokenizer do
   end
 
 
-  defp parse_tag('!' ++ t), do: {}
+  defp parse_tag('!' ++ _t), do: {}
   defp parse_tag('#' ++ t), do: parse_section(t, :section)
   defp parse_tag('^' ++ t), do: parse_section(t, :inverted_section)
   defp parse_tag('/' ++ t), do: {:end_section, parse_name(t)}
   defp parse_tag('>' ++ t), do: {:partial, parse_name(t), 0}
   defp parse_tag('&' ++ t), do: parse_variable(t, :unescaped)
-  defp parse_tag('=' ++ t), do: {}
-  defp parse_tag('.' ++ t), do: {:dot, :.}
+  defp parse_tag('=' ++ _t), do: {}
+  defp parse_tag('.' ++ _t), do: {:dot, :.}
   defp parse_tag(t), do: parse_variable(t, :escaped)
 
 

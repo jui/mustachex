@@ -28,8 +28,7 @@ defmodule Mustachex do
 
   """
   def render_string(source, bindings \\ [], options \\ []) do
-    compiled = compile_string(source, bindings, options)
-#    do_eval(compiled, bindings, options)
+   compile_string(source, bindings, options)
   end
 
   @doc """
@@ -56,13 +55,4 @@ defmodule Mustachex do
     Mustachex.Compiler.compile(source, bindings, options)
   end
 
-
-#  defp to_context(bindings) do
-#    [mustache_root: [bindings]]
-#  end
-
-#  defp do_eval(compiled, bindings, options) do
-#    { result, _ } = Code.eval_quoted(compiled, to_context(bindings), options)
-#    result
-#  end
 end
