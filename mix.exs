@@ -5,7 +5,9 @@ defmodule Mustachex.Mixfile do
     [app: :mustachex,
      version: "0.0.1",
      elixir: "~> 1.0.0",
-     deps: deps]
+     deps: deps,
+     description: description,
+     package: package]
   end
 
   # Configuration for the OTP application
@@ -26,5 +28,15 @@ defmodule Mustachex.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     []
+  end
+
+  defp description do
+    "Mustache for Elixir"
+  end
+
+  def package do
+    [ contributors: ["jui"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/jui/mustachex"}]
   end
 end
