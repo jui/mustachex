@@ -17,12 +17,13 @@ defmodule Mustachex.Compiler do
     ret = bindings[name]
     if ret==nil do
       ret = bindings[Atom.to_string(name)]
-    end
-    if ret == nil and root != nil do
-      get_value(root, name, nil)
+      if ret == nil and root != nil do
+        get_value(root, name, nil)
+      end
     end
     ret || ""
   end
+
   def get_value(bindings, name, root) when is_map(bindings) and is_list(name) do
     Enum.reduce(name, bindings, fn(name, acc) ->
                   get_value(acc, name, root)

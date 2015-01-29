@@ -19,21 +19,29 @@ defmodule Mustachex.Tokenizer do
   defp scan([], scanned, buf, :in_text), do: 
     scanned ++ [parse_text(buf)]
 
-  defp strip(str) do
-    str |> List.to_string |> String.strip |> String.to_char_list
-  end
+  defp strip(str), do: :string.strip(str, :both)
+  defp is_dotted?(str), do: Enum.member?(str, ?.)
+
+  defp parse_tag('!' ++ _t), do: {}
+  defp parse_tag('#' ++ t), do: parse_section(t, :section)
+  defp parse_tag('^' ++ t), do: parse_section(t, :inverted_section)
+  defp parse_tag('/' ++ t), do: {:end_section, parse_name(t)}
+  defp parse_tag('>' ++ t), do: {:partial, parse_name(t), 0}
+  defp parse_tag('&' ++ t), do: parse_variable(t, :unescaped)
+  defp parse_tag('=' ++ _t), do: {}
+  defp parse_tag('.' ++ _t), do: {:dot, :.}
+  defp parse_tag(t), do: parse_variable(t, :escaped)
 
   defp parse_name(str) do
     if is_dotted?(str) do
-      List.to_string(str) |> String.split(".") |> Enum.map(fn(t) -> String.to_atom(t) end)
+      :string.tokens(str, '.') |> Enum.map(fn(t) -> List.to_atom(t) end)
     else
       List.to_atom(strip(str))
     end
   end
 
-  defp is_dotted?(str), do: Enum.member?(str, ?.)
-
   defp parse_text(buf), do: {:text, List.to_string(buf)}
+
   defp parse_section(buf, :section) do
     if is_dotted?(buf) do
       {:dotted_name_section, parse_name(buf)}
@@ -41,7 +49,6 @@ defmodule Mustachex.Tokenizer do
       {:section, parse_name(buf)}
     end
   end
-
   defp parse_section(buf, :inverted_section) do
     if is_dotted?(buf) do
       {:dotted_name_inverted_section, parse_name(buf)}
@@ -57,7 +64,6 @@ defmodule Mustachex.Tokenizer do
     end
     {var, parse_name(buf)}
   end
-
   defp parse_variable(buf, :unescaped) do
     var = :unescaped_variable
     if is_dotted?(buf) do
@@ -65,18 +71,6 @@ defmodule Mustachex.Tokenizer do
     end
     {var, parse_name(buf)}
   end
-
-
-  defp parse_tag('!' ++ _t), do: {}
-  defp parse_tag('#' ++ t), do: parse_section(t, :section)
-  defp parse_tag('^' ++ t), do: parse_section(t, :inverted_section)
-  defp parse_tag('/' ++ t), do: {:end_section, parse_name(t)}
-  defp parse_tag('>' ++ t), do: {:partial, parse_name(t), 0}
-  defp parse_tag('&' ++ t), do: parse_variable(t, :unescaped)
-  defp parse_tag('=' ++ _t), do: {}
-  defp parse_tag('.' ++ _t), do: {:dot, :.}
-  defp parse_tag(t), do: parse_variable(t, :escaped)
-
 
 end
 
