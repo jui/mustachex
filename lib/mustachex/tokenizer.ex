@@ -13,11 +13,8 @@ defmodule Mustachex.Tokenizer do
   defp scan('}}}' ++ t, scanned, buf, :in_unescaped_var), do: scan(t, scanned ++ [parse_variable(buf, :unescaped)], [], :in_text)
   defp scan('{{' ++ t, scanned, buf, :in_text), do: scan(t, scanned ++ [parse_text(buf)], [], :in_tag)
   defp scan('}}' ++ t, scanned, buf, :in_tag), do: scan(t, scanned ++ [parse_tag(strip(buf))], [], :in_text)
-  defp scan([h|t], scanned, buf, :in_tag), do: scan(t, scanned, buf ++ [h], :in_tag)
-  defp scan([h|t], scanned, buf, :in_text), do: scan(t, scanned, buf ++ [h], :in_text)
-  defp scan([h|t], scanned, buf, :in_unescaped_var), do: scan(t, scanned, buf ++ [h], :in_unescaped_var)
-  defp scan([], scanned, buf, :in_text), do: 
-    scanned ++ [parse_text(buf)]
+  defp scan([h|t], scanned, buf, scan_type), do: scan(t, scanned, buf ++ [h], scan_type)
+  defp scan([], scanned, buf, :in_text), do: scanned ++ [parse_text(buf)]
 
   defp strip(str), do: :string.strip(str, :both)
   defp is_dotted?(str), do: Enum.member?(str, ?.)

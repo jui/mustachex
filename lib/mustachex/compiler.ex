@@ -40,10 +40,8 @@ defmodule Mustachex.Compiler do
     get_value(root, name, nil)
   end
 
-
   def check_lambda(val) when is_function(val), do: val.()
   def check_lambda(val), do: val
-
 
   def build([{:text,val}|rest], bindings, opts), do: [val] ++ build(rest, bindings, opts)
 
@@ -52,14 +50,12 @@ defmodule Mustachex.Compiler do
   end
 
   def build([{tag,name}|rest], bindings, opts) when tag in [:unescaped_variable, :unescaped_dot, :unescaped_dotted_name] do
-    [get_value(bindings, name, opts[:root]) |> check_lambda] ++ build(rest, bindings, opts)
+    [get_value(bindings, name, opts[:root]) |> check_lambda |> to_string] ++ build(rest, bindings, opts)
   end
 
   def build([{tag,name}|rest], bindings, opts) when tag in [:section, :dotted_name_section] do
     bind = get_value(bindings, name, opts[:root])
-    idx = Enum.find_index(rest, fn(e) -> 
-                          (elem(e,0) == :end_section and elem(e,1) == name) 
-                          end)
+    idx = Enum.find_index(rest, fn(e) -> {:end_section, name} == e end) 
     elements = Enum.take(rest, idx)
     if is_list(bind) do
       ret = Enum.map(bind, fn(b) -> 
@@ -78,15 +74,12 @@ defmodule Mustachex.Compiler do
 
   def build([{tag,name}|rest], bindings, opts) when tag in [:inverted_section, :dotted_name_inverted_section] do
     bind = get_value(bindings, name, opts[:root])
-    idx = Enum.find_index(rest, fn(e) -> 
-                          (elem(e,0) == :end_section and elem(e,1) == name) 
-                          end)
+    idx = Enum.find_index(rest, fn(e) -> {:end_section, name} == e end)
     elements = Enum.take(rest, idx)
     if bind == nil or bind == [] or bind == false do
       ret = build(elements, bind, opts)
     end
-    rest = Enum.drop(rest, idx+1)
-    [ret] ++ build(rest, bindings, opts)
+    [ret] ++ build(Enum.drop(rest, idx+1), bindings, opts)
   end
 
   def build([{:partial,name, _}|rest], bindings, opts) do
