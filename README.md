@@ -1,7 +1,5 @@
 # Mustache for Elixir
 
-[![Build Status](https://travis-ci.org/jui/mustachex.png?branch=master)](https://travis-ci.org/jui/mustachex)
-
 ## Usage
 
 ```elixir
