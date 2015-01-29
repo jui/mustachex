@@ -1,6 +1,6 @@
 # Mustache for Elixir
 
-[![Build Status](https://travis-ci.org/jui/mustachex.png?branch=master)](https://travis-ci.org/mururu/elixir-mustache)
+[![Build Status](https://travis-ci.org/jui/mustachex.png?branch=master)](https://travis-ci.org/jui/mustachex)
 
 WIP
 
