@@ -23,18 +23,19 @@ defmodule Mustachex.Compiler do
     end
     ret || ""
   end
-
   def get_value(bindings, name, root) when is_map(bindings) and is_list(name) do
     Enum.reduce(name, bindings, fn(name, acc) ->
                   get_value(acc, name, root)
                 end)
   end
+
   def get_value(bindings, name, _root) when is_list(bindings) and is_atom(name), do: bindings[name]
   def get_value(bindings, name, root) when is_list(bindings) and is_list(name) do
     Enum.reduce(name, bindings, fn(name, acc) ->
                   get_value(acc, name, root)
                 end)
   end
+
   def get_value(bindings, name, root) when is_tuple(bindings) and is_atom(name), do: get_value(Keyword.new([bindings]), name, root)
   def get_value(_bindings, name, root) when is_atom(name) do
     get_value(root, name, nil)
