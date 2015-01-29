@@ -2,13 +2,12 @@
 
 [![Build Status](https://travis-ci.org/jui/mustachex.png?branch=master)](https://travis-ci.org/jui/mustachex)
 
-WIP
-
 ## Usage
 
 ```elixir
 Mustachex.render("Hello, {{planet}}", [planet: "World!"])
 #=> "Hello, World!"
+Mustachex.render("Hello, {{planet}}", %{planet: "World!"})
 ```
 
 ## Links
