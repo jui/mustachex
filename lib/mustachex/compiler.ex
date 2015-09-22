@@ -21,7 +21,7 @@ defmodule Mustachex.Compiler do
         get_value(root, name, nil)
       end
     end
-    ret || ""
+    ret
   end
   def get_value(bindings, name, root) when is_map(bindings) and is_list(name) do
     Enum.reduce(name, bindings, fn(name, acc) ->
@@ -56,10 +56,10 @@ defmodule Mustachex.Compiler do
 
   def build([{tag,name}|rest], bindings, opts) when tag in [:section, :dotted_name_section] do
     bind = get_value(bindings, name, opts[:root])
-    idx = Enum.find_index(rest, fn(e) -> {:end_section, name} == e end) 
+    idx = Enum.find_index(rest, fn(e) -> {:end_section, name} == e end)
     elements = Enum.take(rest, idx)
     if is_list(bind) do
-      ret = Enum.map(bind, fn(b) -> 
+      ret = Enum.map(bind, fn(b) ->
                        build(elements, b, opts)
                      end)
     else
@@ -105,6 +105,3 @@ defmodule Mustachex.Compiler do
     []
   end
 end
-
-
-
