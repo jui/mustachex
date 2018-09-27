@@ -5,9 +5,9 @@ defmodule Mustachex.Mixfile do
     [app: :mustachex,
      version: "0.0.1",
      elixir: "~> 1.0",
-     deps: deps,
-     description: description,
-     package: package]
+     deps: deps(),
+     description: description(),
+     package: package()]
   end
 
   # Configuration for the OTP application

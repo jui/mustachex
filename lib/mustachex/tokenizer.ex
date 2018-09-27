@@ -2,7 +2,7 @@ defmodule Mustachex.Tokenizer do
   @moduledoc false
 
   def tokenize(template) when is_binary(template) do
-    tokenize(String.to_char_list(template))
+    tokenize(String.to_charlist(template))
   end
 
   def tokenize(template) when is_list(template) do
@@ -55,16 +55,18 @@ defmodule Mustachex.Tokenizer do
   end
 
   defp parse_variable(buf, :escaped) do
-    var = :variable
-    if is_dotted?(buf) do
-      var = :dotted_name
+    var = if is_dotted?(buf) do
+      :dotted_name
+    else
+      :variable
     end
     {var, parse_name(buf)}
   end
   defp parse_variable(buf, :unescaped) do
-    var = :unescaped_variable
-    if is_dotted?(buf) do
-      var = :unescaped_dotted_name
+    var = if is_dotted?(buf) do
+      :unescaped_dotted_name
+    else
+      :unescaped_variable
     end
     {var, parse_name(buf)}
   end

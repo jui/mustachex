@@ -14,14 +14,16 @@ defmodule Mustachex.Compiler do
   def get_value(nil, _, _ ), do: nil
   def get_value(val, :., _) when is_bitstring(val), do: val
   def get_value(bindings, name, root) when is_map(bindings) and is_atom(name) do
-    ret = bindings[name]
-    if ret==nil do
-      ret = bindings[Atom.to_string(name)]
-      if ret == nil and root != nil do
-        get_value(root, name, nil)
-      end
+    case bindings[name] do
+      nil ->
+        r = bindings[Atom.to_string(name)]
+        if r == nil and root != nil do
+          get_value(root, name, nil)
+        else
+          r
+        end
+      data -> data
     end
-    ret
   end
   def get_value(bindings, name, root) when is_map(bindings) and is_list(name) do
     Enum.reduce(name, bindings, fn(name, acc) ->
@@ -58,17 +60,17 @@ defmodule Mustachex.Compiler do
     bind = get_value(bindings, name, opts[:root])
     idx = Enum.find_index(rest, fn(e) -> {:end_section, name} == e end)
     elements = Enum.take(rest, idx)
-    if is_list(bind) do
-      ret = Enum.map(bind, fn(b) ->
-                       build(elements, b, opts)
-                     end)
+
+    ret = if is_list(bind) do
+      Enum.map(bind, fn(b) -> build(elements, b, opts) end)
     else
       if bind != nil and bind != false do
-        ret = build(elements, bind, opts)
+        build(elements, bind, opts)
       else
-        ret = ""
+        ""
       end
     end
+
     rest = Enum.drop(rest, idx+1)
     [ret] ++ build(rest, bindings, opts)
   end
@@ -77,18 +79,18 @@ defmodule Mustachex.Compiler do
     bind = get_value(bindings, name, opts[:root])
     idx = Enum.find_index(rest, fn(e) -> {:end_section, name} == e end)
     elements = Enum.take(rest, idx)
-    if bind == nil or bind == [] or bind == false do
-      ret = build(elements, bind, opts)
+    ret = if bind == nil or bind == [] or bind == false do
+      build(elements, bind, opts)
     end
     [ret] ++ build(Enum.drop(rest, idx+1), bindings, opts)
   end
 
   def build([{:partial,name, _}|rest], bindings, opts) do
     partial = opts[:partials][name]
-    if partial != nil do
-      ret = build(partial, bindings, opts)
-    else
-      ret = ""
+
+    ret = case partial do
+      nil -> ""
+      _ -> build(partial, bindings, opts)
     end
     [ret] ++ build(rest, bindings, opts)
   end
