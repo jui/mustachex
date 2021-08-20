@@ -61,14 +61,17 @@ defmodule Mustachex.Compiler do
     idx = Enum.find_index(rest, fn(e) -> {:end_section, name} == e end)
     elements = Enum.take(rest, idx)
 
-    ret = if is_list(bind) do
-      Enum.map(bind, fn(b) -> build(elements, b, opts) end)
-    else
-      if bind != nil and bind != false do
-        build(elements, bind, opts)
-      else
-        ""
-      end
+    ret = cond do
+      is_list(bind) ->
+        Enum.map(bind, fn(b) -> build(elements, b, opts) end)
+      is_function(bind) ->
+        bind.(build(elements, bindings, opts) |> List.flatten |> Enum.join, bindings)
+      true ->
+        if bind != nil and bind != false do
+          build(elements, bind, opts)
+        else
+          ""
+        end
     end
 
     rest = Enum.drop(rest, idx+1)
